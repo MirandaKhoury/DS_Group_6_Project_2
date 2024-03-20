@@ -1,0 +1,115 @@
+---
+title: "Intercountry Inflation Granger Analysis and Intracountry Inflation/PPP ARIMA Analysis"
+author: "Miranda Khoury"
+date: "2024-02-27"
+output: html_document
+---
+
+Initial Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(lmtest)
+library(ggplot2)
+library(forecast)
+```
+
+Read in Data
+```{r}
+inflations <- read.csv("C:/Users/mrkho/OneDrive/Documents/4th year/DS-4002/country_inflations.csv")
+
+US_i <- inflations[252,-1:-4]
+Canada_i <- inflations[36,-1:-4]
+Mexico_i <- inflations[155,-1:-4]
+
+pp <- read.csv("C:/Users/mrkho/OneDrive/Documents/4th year/DS-4002/purchasing_power.csv")
+
+US_p <- pp[1,-1]
+Canada_p <- pp[3,-1]
+Mexico_p <- pp[2,-1]
+```
+
+Conduct Granger analysis for testing inflation rates across countries:
+```{r}
+# US on Canada:
+UC_inf_res <- grangertest(t(US_i), t(Canada_i))
+# US on Mexico:
+UM_inf_res <- grangertest(t(US_i), t(Mexico_i))
+# Mexico on Canada:
+MC_inf_res <- grangertest(t(Mexico_i), t(Canada_i))
+# Mexico on US:
+MU_inf_res <- grangertest(t(Mexico_i), t(US_i))
+# Canada on US:
+CU_inf_res <- grangertest(t(Canada_i), t(US_i))
+# Canada on Mexico:
+CM_inf_res <- grangertest(t(Canada_i), t(Mexico_i))
+
+# combine p values into 1 table:
+inf_combo_p_vals <- as.data.frame(c(UC_inf_res[2,4], UM_inf_res[2,4], MC_inf_res[2,4], MU_inf_res[2,4], CU_inf_res[2,4], CM_inf_res[2,4]))
+inf_combo_p_vals$combination <- c("US on Canada", "US on Mexico", "Mexico on Canada", "Mexico on US", "Canada on US", "Canada on Mexico")
+colnames(inf_combo_p_vals) <- c("Pval", "Combination")
+
+# make a barplot to visually summarize results
+p<-ggplot(data=inf_combo_p_vals, aes(x=Combination, y=Pval)) +
+  geom_bar(stat="identity") + geom_hline(yintercept = 0.05) + ggtitle("T Test Results for Inter-Country Inflation Impacts")
+p
+
+# Results: US inflation rate predicts Canada inflation rate, and Canada inflation rate predicts Mexico inflation rate; no other combinations are predictive.
+
+```
+
+ARIMA modeling to forecast Canada PPP and Canada inflation (using the other Canada time series as covariates).
+```{r}
+# Using auto.arima from the forecast package. This function chooses orders for parameters p, d, and q based on AIC and BIC scores it calculates for each combo.
+
+# make the ARIMA models
+Ci_ARIMA <- auto.arima(t(Canada_i), xreg = t(Canada_p))
+Cp_ARIMA <- auto.arima(t(Canada_p), xreg = t(Canada_i))
+
+# check the residuals of the models to check performance
+checkresiduals(Ci_ARIMA)
+checkresiduals(Cp_ARIMA)
+
+# make forecasts for the two time series and plot results
+forecastCi <- forecast(Ci_ARIMA, xreg=t(Canada_p))
+plot(forecastCi, main = "Forecast for Canada Inflation Rate", xlab = "Years after 1960", ylab = "Inflation Rate (%)")
+forecastCp <- forecast(Cp_ARIMA, xreg=t(Canada_i))
+plot(forecastCp, main = "Forecast for Canada PPP", xlab = "Years after 1960", ylab = "Canadian Dollar PPP")
+
+```
+
+ARIMA modeling to forecast Mexico PPP and Mexico inflation (using the other Mexico time series as covariates).
+```{r}
+
+# make the ARIMA models
+Mi_ARIMA <- auto.arima(t(Mexico_i), xreg = t(Mexico_p))
+Mp_ARIMA <- auto.arima(t(Mexico_p), xreg = t(Mexico_i))
+
+# check the residuals of the models to check performance
+checkresiduals(Mi_ARIMA)
+checkresiduals(Mp_ARIMA)
+
+# make forecasts for the two time series and plot results
+forecastMi <- forecast(Mi_ARIMA, xreg=t(Mexico_p))
+plot(forecastMi, main = "Forecast for Mexico Inflation Rate", xlab = "Years after 1960", ylab = "Inflation Rate (%)")
+forecastMp <- forecast(Mp_ARIMA, xreg=t(Mexico_i))
+plot(forecastMp, main = "Forecast for Mexico PPP", xlab = "Years after 1960", ylab = "Mexican Peso PPP")
+
+```
+
+US ARIMA (only for inflation)
+```{r}
+
+# make the ARIMA model
+Ui_ARIMA <- auto.arima(t(US_i), xreg = t(US_p))
+
+# check the residuals of the model to check performance
+checkresiduals(Ui_ARIMA)
+
+# make forecasts for the time series and plot results
+forecastUi <- forecast(Ui_ARIMA, xreg=t(US_p))
+plot(forecastUi, main = "Forecast for US Inflation Rate", xlab = "Years after 1960", ylab = "Inflation Rate (%)")
+
+```
+
+

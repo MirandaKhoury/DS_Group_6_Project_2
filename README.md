@@ -5,10 +5,10 @@ This is the repository for the second project of UVA DS 4002 project group 6: Mi
 Software used: We used the coding language R and IDE software RStudio to perform correlation analysis on our purchasing power parity and inflation rate dataframes. 
 
 Add-on packages installed with software:
--readr
--ggplot2
--lmtest
--forecast
+- readr
+- ggplot2
+- lmtest
+- forecast
 
 Platform: We used the platform Windows for our project.
 
@@ -17,34 +17,34 @@ Platform: We used the platform Windows for our project.
 ## Section 2: Map of documentation
  
 Data folder:
--Data Appendix.pdf
--Purchasing_power_parity.csv
--inflation_%_per_yr.csv
+- Data Appendix.pdf
+- Purchasing_power_parity.csv
+- inflation_%_per_yr.csv
 
 
 Output folder:
--inflation_%_per_yr.csv
--canada_inflation_residuals.png
--canada_ppp_forecast.png
--canada_ppp_residuals.png
--inflation.jpg
--inflation_granger_p_vals.png
--inflation_granger_p_vals.png
--mexico_inflation_forecast.png
--mexico_inflation_residuals.png
--mexico_ppp_forecast.png
--mexico_ppp_residuals.png
--ppp_canada.jpg
--ppp_mexico.jpg
--ppp_on_inflation.csv
--ppp_us.jpg
--us_inflation_forecast.png
--us_inflation_residuals.png
+- inflation_%_per_yr.csv
+- canada_inflation_residuals.png
+- canada_ppp_forecast.png
+- canada_ppp_residuals.png
+- inflation.jpg
+- inflation_granger_p_vals.png
+- inflation_granger_p_vals.png
+- mexico_inflation_forecast.png
+- mexico_inflation_residuals.png
+- mexico_ppp_forecast.png
+- mexico_ppp_residuals.png
+- ppp_canada.jpg
+- ppp_mexico.jpg
+- ppp_on_inflation.csv
+- ppp_us.jpg
+- us_inflation_forecast.png
+- us_inflation_residuals.png
 
 
 Scripts folder:
--Inflation_Granger_and_Intracountry_ARIMA.Rmd
--Time_Series_Inflation.Rmd
+- Inflation_Granger_and_Intracountry_ARIMA.Rmd
+- Time_Series_Inflation.Rmd
 
 
 
